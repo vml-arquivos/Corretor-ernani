@@ -15,6 +15,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import About from "./pages/About";
 import SimulatorPage from "./pages/Simulator";
+import Contact from "./pages/Contact";
 import Dashboard from "./pages/admin/Dashboard";
 import PropertiesAdmin from "./pages/admin/Properties";
 import PropertyEdit from "./pages/admin/PropertyEdit";
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/quem-somos" component={About} />
       <Route path="/simulador-financiamento" component={SimulatorPage} />
+      <Route path="/contato" component={Contact} />
       
       {/* Admin routes */}
       <Route path="/admin/analytics">

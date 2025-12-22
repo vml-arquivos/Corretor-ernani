@@ -1510,29 +1510,7 @@ const reviewsRouter = router({
     }),
 });
 
-// ============================================
-// APP ROUTER
-// ============================================
-
-export const appRouter = router({
-  system: systemRouter,
-  auth: authRouter,
-  properties: propertiesRouter,
-  propertyImages: propertyImagesRouter,
-  leads: leadsRouter,
-  interactions: interactionsRouter,
-  blog: blogRouter,
-  settings: settingsRouter,
-  owners: ownersRouter,
-  integration: integrationRouter,
-  analytics: analyticsRouter,
-  financial: financialRouter,
-  reviews: reviewsRouter,
-});
-
-export type AppRouter = typeof appRouter;
-
-// server/routers.ts (continuação)
+// Importações para simulador e aluguel
 import { simulateFinancing, SimulatorInputSchema } from "./simulator";
 
 // ============================================
@@ -1547,8 +1525,6 @@ const simulatorRouter = router({
       return simulateFinancing(input);
     }),
 
-  // Obter todas as taxas de juros ativas (público)
-  getRates: publicProcedure
   // Obter todas as taxas de juros ativas (público)
   getRates: publicProcedure
     .query(async () => {
@@ -1762,7 +1738,16 @@ export const appRouter = router({
   auth: authRouter,
   system: systemRouter,
   properties: propertiesRouter,
+  propertyImages: propertyImagesRouter,
   leads: leadsRouter,
+  interactions: interactionsRouter,
+  blog: blogRouter,
+  settings: settingsRouter,
+  owners: ownersRouter,
+  integration: integrationRouter,
+  analytics: analyticsRouter,
+  financial: financialRouter,
+  reviews: reviewsRouter,
   simulator: simulatorRouter,
   rentals: rentalRouter,
 });

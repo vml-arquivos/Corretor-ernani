@@ -22,7 +22,7 @@ import {
 } from "../components/ui/select";
 import { Separator } from "../components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
-import { useTrpc } from "../lib/trpc";
+import { trpc } from "../lib/trpc";
 import { Loader2 } from "lucide-react";
 
 // --- Schemas ---
@@ -112,7 +112,7 @@ const AmortizationTable = ({ table }: { table: AmortizationRow[] }) => {
 
 // --- Componente Principal ---
 export const SimulatorPage = () => {
-  const trpc = useTrpc();
+  const trpcClient = trpc.useUtils();
   const {
     register,
     handleSubmit,
@@ -148,32 +148,22 @@ export const SimulatorPage = () => {
   const loanAmount = watch("loanAmount");
 
   // Mutação para simular
-  const simulateMutation = useMutation({
-    mutationFn: (data: z.infer<typeof SimulatorInputSchema>) =>
-      trpc.simulator.simulate.mutate(data),
+  const simulateMutation = trpc.simulator.simulate.useMutation({
     onSuccess: (data) => {
       setResult(data as SimulatorResult);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Erro na simulação:", error);
       alert("Erro ao simular financiamento: " + error.message);
     },
   });
 
   // Mutação para criar lead
-  const createLeadMutation = useMutation({
-    mutationFn: (data: { name: string; phone: string; email?: string; notes: string }) =>
-      trpc.leads.create.mutate({
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        source: "simulador",
-        notes: data.notes,
-      }),
+  const createLeadMutation = trpc.leads.create.useMutation({
     onSuccess: () => {
       alert("Seu contato foi salvo! Em breve um especialista entrará em contato.");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Erro ao salvar lead:", error);
       alert("Erro ao salvar seu contato. Por favor, tente novamente.");
     },
@@ -203,6 +193,7 @@ ${result ? `- Primeira Parcela: R$ ${result.amortizationTable[0].installment.toF
       name: data.name,
       phone: data.phone,
       email: data.email || undefined,
+      source: "site",
       notes: notes,
     });
   };
