@@ -202,7 +202,7 @@ ${result ? `- Primeira Parcela: R$ ${result.amortizationTable[0].installment.toF
     <div className="container mx-auto py-12">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-primary">Simulador de Financiamento Imobiliário</Card</CardTitle>
+          <CardTitle className="text-3xl font-bold text-primary">Simulador de Financiamento Imobiliário</CardTitle>
           <CardDescription>
             Calcule as parcelas do seu financiamento nas modalidades SAC e PRICE.
             Preencha seus dados para que um especialista entre em contato com as melhores taxas do dia.
