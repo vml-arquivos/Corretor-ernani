@@ -2,7 +2,6 @@
 # STAGE 1: Build do Frontend (Client)
 # ============================================
 FROM node:22-alpine AS client-builder
-
 WORKDIR /app
 
 # Copiar package.json e lock files
@@ -13,10 +12,11 @@ COPY patches ./patches
 RUN npm install -g pnpm@latest && \
     pnpm install --frozen-lockfile
 
-# Copiar código fonte do cliente
+# Copiar código fonte necessário para o build do cliente
 COPY client ./client
 COPY shared ./shared
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 
 # Build do frontend
 RUN pnpm run build:client
@@ -25,7 +25,6 @@ RUN pnpm run build:client
 # STAGE 2: Build do Backend (Server)
 # ============================================
 FROM node:22-alpine AS server-builder
-
 WORKDIR /app
 
 # Copiar package.json e lock files
@@ -40,8 +39,8 @@ RUN npm install -g pnpm@latest && \
 COPY server ./server
 COPY drizzle ./drizzle
 COPY shared ./shared
-# COPY storage ./storage  # Diretório não existe no repositório
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 
 # Build do backend
 RUN pnpm run build:server
@@ -50,10 +49,9 @@ RUN pnpm run build:server
 # STAGE 3: Imagem Final de Produção
 # ============================================
 FROM node:22-alpine
-
 WORKDIR /app
 
-# Instalar apenas dependências de produção
+# Instalar pnpm globalmente
 RUN npm install -g pnpm@latest
 
 # Copiar package.json e instalar apenas prod dependencies
@@ -65,10 +63,9 @@ RUN pnpm install --prod --frozen-lockfile
 COPY --from=client-builder /app/dist/client ./dist/client
 COPY --from=server-builder /app/dist/server ./dist/server
 
-# Copiar arquivos necessários
+# Copiar arquivos necessários para runtime
 COPY drizzle ./drizzle
 COPY shared ./shared
-# COPY storage ./storage  # Diretório não existe no repositório
 COPY server/_core ./server/_core
 
 # Criar usuário não-root para segurança
