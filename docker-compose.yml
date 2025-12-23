@@ -2,31 +2,6 @@ version: '3.8'
 
 services:
   # ============================================
-  # Banco de Dados PostgreSQL (OPCIONAL)
-  # ============================================
-  # Descomente esta seção se quiser usar PostgreSQL local ao invés do Supabase
-  # db:
-  #   image: postgres:16-alpine
-  #   container_name: corretordasmansoes-db
-  #   restart: unless-stopped
-  #   environment:
-  #     POSTGRES_DB: ${POSTGRES_DB:-corretordasmansoes}
-  #     POSTGRES_USER: ${POSTGRES_USER:-corretor}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-corretorpassword}
-  #   ports:
-  #     - "${POSTGRES_PORT:-5432}:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   networks:
-  #     - corretor-network
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-corretor} -d ${POSTGRES_DB:-corretordasmansoes}"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 30s
-
-  # ============================================
   # Aplicação Web (Frontend + Backend)
   # ============================================
   app:
@@ -42,8 +17,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       
-      # Banco de dados
-      # Use DATABASE_URL do Supabase ou PostgreSQL local
+      # Banco de dados (Supabase PostgreSQL)
       DATABASE_URL: ${DATABASE_URL}
       
       # Autenticação JWT
@@ -83,10 +57,9 @@ services:
       # App Info
       VITE_APP_TITLE: ${VITE_APP_TITLE:-Corretor das Mansões - Ernani Nunes}
       VITE_APP_LOGO: ${VITE_APP_LOGO}
-    # Remova o depends_on se estiver usando Supabase
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
+      
+      # Timezone
+      TZ: ${TZ:-America/Sao_Paulo}
     networks:
       - corretor-network
     healthcheck:
@@ -95,32 +68,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # ============================================
-  # pgAdmin (Opcional - apenas para desenvolvimento com PostgreSQL local)
-  # ============================================
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: corretordasmansoes-pgadmin
-    restart: unless-stopped
-    ports:
-      - "${PGADMIN_PORT:-8080}:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@corretor.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-    # depends_on:
-    #   - db
-    networks:
-      - corretor-network
-    profiles:
-      - dev
-
-# ============================================
-# Volumes
-# ============================================
-volumes:
-  postgres_data:
-    driver: local
 
 # ============================================
 # Networks
