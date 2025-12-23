@@ -7,6 +7,7 @@ WORKDIR /app
 
 # Copiar package.json e lock files
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 
 # Instalar pnpm e dependências
 RUN npm install -g pnpm@latest && \
@@ -29,6 +30,7 @@ WORKDIR /app
 
 # Copiar package.json e lock files
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 
 # Instalar pnpm e dependências
 RUN npm install -g pnpm@latest && \
@@ -56,6 +58,7 @@ RUN npm install -g pnpm@latest
 
 # Copiar package.json e instalar apenas prod dependencies
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 RUN pnpm install --prod --frozen-lockfile
 
 # Copiar builds do frontend e backend
