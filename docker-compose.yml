@@ -2,30 +2,29 @@ version: '3.8'
 
 services:
   # ============================================
-  # Banco de Dados MySQL
+  # Banco de Dados PostgreSQL (OPCIONAL)
   # ============================================
-  db:
-    image: mysql:8.0
-    container_name: corretordasmansoes-db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-corretordasmansoes}
-      MYSQL_USER: ${MYSQL_USER:-corretor}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-corretorpassword}
-    ports:
-      - "${MYSQL_PORT:-3306}:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./drizzle/migrations:/docker-entrypoint-initdb.d:ro
-    networks:
-      - corretor-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+  # Descomente esta seção se quiser usar PostgreSQL local ao invés do Supabase
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: corretordasmansoes-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB:-corretordasmansoes}
+  #     POSTGRES_USER: ${POSTGRES_USER:-corretor}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-corretorpassword}
+  #   ports:
+  #     - "${POSTGRES_PORT:-5432}:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - corretor-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-corretor} -d ${POSTGRES_DB:-corretordasmansoes}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 30s
 
   # ============================================
   # Aplicação Web (Frontend + Backend)
@@ -44,38 +43,50 @@ services:
       PORT: 3000
       
       # Banco de dados
-      DATABASE_URL: mysql://${MYSQL_USER:-corretor}:${MYSQL_PASSWORD:-corretorpassword}@db:3306/${MYSQL_DATABASE:-corretordasmansoes}
+      # Use DATABASE_URL do Supabase ou PostgreSQL local
+      DATABASE_URL: ${DATABASE_URL}
       
       # Autenticação JWT
       JWT_SECRET: ${JWT_SECRET}
       
       # OAuth Manus
       VITE_APP_ID: ${VITE_APP_ID}
-      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL}
-      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL}
+      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL:-https://oauth.manus.im}
+      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL:-https://portal.manus.im}
       
       # Owner Info
       OWNER_OPEN_ID: ${OWNER_OPEN_ID}
-      OWNER_NAME: ${OWNER_NAME}
+      OWNER_NAME: ${OWNER_NAME:-Ernani Nunes}
       
       # Manus Forge API (Backend)
-      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL}
+      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL:-https://forge.manus.im}
       BUILT_IN_FORGE_API_KEY: ${BUILT_IN_FORGE_API_KEY}
       
       # Manus Forge API (Frontend)
-      VITE_FRONTEND_FORGE_API_URL: ${VITE_FRONTEND_FORGE_API_URL}
+      VITE_FRONTEND_FORGE_API_URL: ${VITE_FRONTEND_FORGE_API_URL:-https://forge.manus.im}
       VITE_FRONTEND_FORGE_API_KEY: ${VITE_FRONTEND_FORGE_API_KEY}
+      
+      # N8N Integration (Opcional)
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL}
+      N8N_API_KEY: ${N8N_API_KEY}
+      
+      # AWS S3 (Opcional)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
       
       # Analytics
       VITE_ANALYTICS_ENDPOINT: ${VITE_ANALYTICS_ENDPOINT}
       VITE_ANALYTICS_WEBSITE_ID: ${VITE_ANALYTICS_WEBSITE_ID}
       
       # App Info
-      VITE_APP_TITLE: ${VITE_APP_TITLE:-Corretor das Mansões - Hernani Muniz}
+      VITE_APP_TITLE: ${VITE_APP_TITLE:-Corretor das Mansões - Ernani Nunes}
       VITE_APP_LOGO: ${VITE_APP_LOGO}
-    depends_on:
-      db:
-        condition: service_healthy
+    # Remova o depends_on se estiver usando Supabase
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
     networks:
       - corretor-network
     healthcheck:
@@ -86,21 +97,19 @@ services:
       start_period: 40s
 
   # ============================================
-  # phpMyAdmin (Opcional - apenas para desenvolvimento)
+  # pgAdmin (Opcional - apenas para desenvolvimento com PostgreSQL local)
   # ============================================
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: corretordasmansoes-phpmyadmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: corretordasmansoes-pgadmin
     restart: unless-stopped
     ports:
-      - "${PHPMYADMIN_PORT:-8080}:80"
+      - "${PGADMIN_PORT:-8080}:80"
     environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_USER: ${MYSQL_USER:-corretor}
-      PMA_PASSWORD: ${MYSQL_PASSWORD:-corretorpassword}
-    depends_on:
-      - db
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@corretor.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    # depends_on:
+    #   - db
     networks:
       - corretor-network
     profiles:
@@ -110,7 +119,7 @@ services:
 # Volumes
 # ============================================
 volumes:
-  mysql_data:
+  postgres_data:
     driver: local
 
 # ============================================

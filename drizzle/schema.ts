@@ -1,4 +1,103 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal, json, date } from "drizzle-orm/mysql-core";
+import { pgTable, pgEnum, serial, text, timestamp, varchar, boolean, decimal, json, date, integer } from "drizzle-orm/pg-core";
+
+// ============================================
+// ENUMS
+// ============================================
+
+export const buyerProfileEnum = pgEnum("buyerProfile", [
+    "investidor",
+    "primeira_casa",
+    "upgrade",
+    "curioso",
+    "indeciso"
+  ]);
+export const clientTypeEnum = pgEnum("clientType", [
+    "comprador",
+    "locatario",
+    "proprietario"
+  ]);
+export const expenseTypeEnum = pgEnum("expenseType", [
+    "manutencao",
+    "limpeza",
+    "reparos",
+    "seguro",
+    "iptu",
+    "condominio",
+    "agua",
+    "luz",
+    "internet",
+    "outro"
+  ]);
+export const interestTypeEnum = pgEnum("interestType", ["venda", "locacao", "ambos"]);
+export const paymentMethodEnum = pgEnum("paymentMethod", [
+    "boleto",
+    "pix",
+    "transferencia",
+    "dinheiro",
+    "outro"
+  ]);
+export const priorityEnum = pgEnum("priority", ["baixa", "media", "alta", "urgente"]);
+export const propertyTypeEnum = pgEnum("propertyType", [
+    "casa",
+    "apartamento",
+    "cobertura",
+    "terreno",
+    "comercial",
+    "rural",
+    "lancamento"
+  ]);
+export const qualificationEnum = pgEnum("qualification", [
+    "quente",
+    "morno",
+    "frio",
+    "nao_qualificado"
+  ]);
+export const rateTypeEnum = pgEnum("rateType", ["sac", "price"]);
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const sourceEnum = pgEnum("source", [
+    "site",
+    "whatsapp",
+    "instagram",
+    "facebook",
+    "indicacao",
+    "portal_zap",
+    "portal_vivareal",
+    "portal_olx",
+    "google",
+    "outro"
+  ]);
+export const stageEnum = pgEnum("stage", [
+    "novo",
+    "contato_inicial",
+    "qualificado",
+    "visita_agendada",
+    "visita_realizada",
+    "proposta",
+    "negociacao",
+    "fechado_ganho",
+    "fechado_perdido",
+    "sem_interesse"
+  ]);
+export const statusEnum = pgEnum("status", ["disponivel", "reservado", "vendido", "alugado", "inativo"]);
+export const transactionInterestEnum = pgEnum("transactionInterest", ["venda", "locacao", "ambos"]);
+export const transactionTypeEnum = pgEnum("transactionType", ["venda", "locacao", "ambos"]);
+export const typeEnum = pgEnum("type", [
+    "ligacao",
+    "whatsapp",
+    "email",
+    "visita",
+    "reuniao",
+    "proposta",
+    "nota",
+    "status_change"
+  ]);
+export const urgencyLevelEnum = pgEnum("urgencyLevel", [
+    "baixa",
+    "media",
+    "alta",
+    "urgente"
+  ]);
+
 
 /**
  * Schema completo para o sistema Corretor das Mansões
@@ -9,15 +108,15 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal,
 // TABELA DE USUÁRIOS (AUTH)
 // ============================================
 
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: roleEnum.default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
@@ -28,8 +127,8 @@ export type InsertUser = typeof users.$inferInsert;
 // TABELA DE IMÓVEIS
 // ============================================
 
-export const properties = mysqlTable("properties", {
-  id: int("id").autoincrement().primaryKey(),
+export const properties = pgTable("properties", {
+  id: serial("id").primaryKey(),
   
   // Informações básicas
   title: varchar("title", { length: 255 }).notNull(),
@@ -37,16 +136,8 @@ export const properties = mysqlTable("properties", {
   referenceCode: varchar("referenceCode", { length: 50 }).unique(),
   
   // Tipo e finalidade
-  propertyType: mysqlEnum("propertyType", [
-    "casa",
-    "apartamento",
-    "cobertura",
-    "terreno",
-    "comercial",
-    "rural",
-    "lancamento"
-  ]).notNull(),
-  transactionType: mysqlEnum("transactionType", ["venda", "locacao", "ambos"]).notNull(),
+  propertyType: propertyTypeEnum.notNull(),
+  transactionType: transactionTypeEnum.notNull(),
   
   // Localização
   address: varchar("address", { length: 255 }),
@@ -58,18 +149,18 @@ export const properties = mysqlTable("properties", {
   longitude: varchar("longitude", { length: 50 }),
   
   // Valores
-  salePrice: int("salePrice"), // em centavos
-  rentPrice: int("rentPrice"), // em centavos
-  condoFee: int("condoFee"), // em centavos
-  iptu: int("iptu"), // em centavos (anual)
+  salePrice: integer("salePrice"), // em centavos
+  rentPrice: integer("rentPrice"), // em centavos
+  condoFee: integer("condoFee"), // em centavos
+  iptu: integer("iptu"), // em centavos (anual)
   
   // Características
-  bedrooms: int("bedrooms"),
-  bathrooms: int("bathrooms"),
-  suites: int("suites"),
-  parkingSpaces: int("parkingSpaces"),
-  totalArea: int("totalArea"), // em m²
-  builtArea: int("builtArea"), // em m²
+  bedrooms: integer("bedrooms"),
+  bathrooms: integer("bathrooms"),
+  suites: integer("suites"),
+  parkingSpaces: integer("parkingSpaces"),
+  totalArea: integer("totalArea"), // em m²
+  builtArea: integer("builtArea"), // em m²
   
   // Características adicionais (JSON)
   features: text("features"), // JSON array: ["piscina", "churrasqueira", "academia"]
@@ -79,7 +170,7 @@ export const properties = mysqlTable("properties", {
   mainImage: varchar("mainImage", { length: 500 }),
   
   // Status e visibilidade
-  status: mysqlEnum("status", ["disponivel", "reservado", "vendido", "alugado", "inativo"]).default("disponivel").notNull(),
+  status: statusEnum.default("disponivel").notNull(),
   featured: boolean("featured").default(false),
   published: boolean("published").default(true),
   
@@ -90,8 +181,8 @@ export const properties = mysqlTable("properties", {
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  createdBy: int("createdBy"),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  createdBy: integer("createdBy"),
 });
 
 export type Property = typeof properties.$inferSelect;
@@ -101,13 +192,13 @@ export type InsertProperty = typeof properties.$inferInsert;
 // TABELA DE IMAGENS DE IMÓVEIS
 // ============================================
 
-export const propertyImages = mysqlTable("propertyImages", {
-  id: int("id").autoincrement().primaryKey(),
-  propertyId: int("propertyId").notNull(),
+export const propertyImages = pgTable("propertyImages", {
+  id: serial("id").primaryKey(),
+  propertyId: integer("propertyId").notNull(),
   imageUrl: varchar("imageUrl", { length: 500 }).notNull(),
   imageKey: varchar("imageKey", { length: 500 }).notNull(),
-  isPrimary: int("isPrimary").default(0).notNull(), // 1 = imagem principal, 0 = secundária
-  displayOrder: int("displayOrder").default(0).notNull(),
+  isPrimary: integer("isPrimary").default(0).notNull(), // 1 = imagem principal, 0 = secundária
+  displayOrder: integer("displayOrder").default(0).notNull(),
   caption: varchar("caption", { length: 255 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -119,8 +210,8 @@ export type InsertPropertyImage = typeof propertyImages.$inferInsert;
 // TABELA DE LEADS/CLIENTES
 // ============================================
 
-export const leads = mysqlTable("leads", {
-  id: int("id").autoincrement().primaryKey(),
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
   
   // Informações pessoais
   name: varchar("name", { length: 255 }).notNull(),
@@ -129,67 +220,25 @@ export const leads = mysqlTable("leads", {
   whatsapp: varchar("whatsapp", { length: 20 }),
   
   // Origem do lead
-  source: mysqlEnum("source", [
-    "site",
-    "whatsapp",
-    "instagram",
-    "facebook",
-    "indicacao",
-    "portal_zap",
-    "portal_vivareal",
-    "portal_olx",
-    "google",
-    "outro"
-  ]).default("site"),
+  source: sourceEnum.default("site"),
   
   // Status no pipeline
-  stage: mysqlEnum("stage", [
-    "novo",
-    "contato_inicial",
-    "qualificado",
-    "visita_agendada",
-    "visita_realizada",
-    "proposta",
-    "negociacao",
-    "fechado_ganho",
-    "fechado_perdido",
-    "sem_interesse"
-  ]).default("novo").notNull(),
+  stage: stageEnum.default("novo").notNull(),
   
   // Perfil do cliente
-  clientType: mysqlEnum("clientType", [
-    "comprador",
-    "locatario",
-    "proprietario"
-  ]).default("comprador").notNull(),
+  clientType: clientTypeEnum.default("comprador").notNull(),
   
-  qualification: mysqlEnum("qualification", [
-    "quente",
-    "morno",
-    "frio",
-    "nao_qualificado"
-  ]).default("nao_qualificado").notNull(),
+  qualification: qualificationEnum.default("nao_qualificado").notNull(),
   
-  buyerProfile: mysqlEnum("buyerProfile", [
-    "investidor",
-    "primeira_casa",
-    "upgrade",
-    "curioso",
-    "indeciso"
-  ]),
+  buyerProfile: buyerProfileEnum,
   
-  urgencyLevel: mysqlEnum("urgencyLevel", [
-    "baixa",
-    "media",
-    "alta",
-    "urgente"
-  ]).default("media"),
+  urgencyLevel: urgencyLevelEnum.default("media"),
   
   // Interesse
-  interestedPropertyId: int("interestedPropertyId"), // ID do imóvel de interesse
-  transactionInterest: mysqlEnum("transactionInterest", ["venda", "locacao", "ambos"]).default("venda"),
-  budgetMin: int("budgetMin"), // em centavos
-  budgetMax: int("budgetMax"), // em centavos
+  interestedPropertyId: integer("interestedPropertyId"), // ID do imóvel de interesse
+  transactionInterest: transactionInterestEnum.default("venda"),
+  budgetMin: integer("budgetMin"), // em centavos
+  budgetMax: integer("budgetMax"), // em centavos
   preferredNeighborhoods: text("preferredNeighborhoods"), // JSON array
   preferredPropertyTypes: text("preferredPropertyTypes"), // JSON array
   
@@ -198,15 +247,15 @@ export const leads = mysqlTable("leads", {
   tags: text("tags"), // JSON array: ["vip", "urgente", "investidor"]
   
   // Atribuição
-  assignedTo: int("assignedTo"), // ID do usuário responsável
+  assignedTo: integer("assignedTo"), // ID do usuário responsável
   
   // Score e prioridade
-  score: int("score").default(0), // 0-100
-  priority: mysqlEnum("priority", ["baixa", "media", "alta", "urgente"]).default("media"),
+  score: integer("score").default(0), // 0-100
+  priority: priorityEnum.default("media"),
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastContactedAt: timestamp("lastContactedAt"),
   convertedAt: timestamp("convertedAt"),
 });
@@ -218,22 +267,13 @@ export type InsertLead = typeof leads.$inferInsert;
 // TABELA DE INTERAÇÕES/HISTÓRICO
 // ============================================
 
-export const interactions = mysqlTable("interactions", {
-  id: int("id").autoincrement().primaryKey(),
+export const interactions = pgTable("interactions", {
+  id: serial("id").primaryKey(),
   
-  leadId: int("leadId").notNull(),
-  userId: int("userId"), // Quem fez a interação
+  leadId: integer("leadId").notNull(),
+  userId: integer("userId"), // Quem fez a interação
   
-  type: mysqlEnum("type", [
-    "ligacao",
-    "whatsapp",
-    "email",
-    "visita",
-    "reuniao",
-    "proposta",
-    "nota",
-    "status_change"
-  ]).notNull(),
+  type: typeEnum.notNull(),
   
   subject: varchar("subject", { length: 255 }),
   description: text("description"),
@@ -251,8 +291,8 @@ export type InsertInteraction = typeof interactions.$inferInsert;
 // TABELA DE BLOG POSTS
 // ============================================
 
-export const blogPosts = mysqlTable("blog_posts", {
-  id: int("id").autoincrement().primaryKey(),
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
   
   title: varchar("title", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).unique().notNull(),
@@ -261,8 +301,8 @@ export const blogPosts = mysqlTable("blog_posts", {
   
   featuredImage: varchar("featuredImage", { length: 500 }),
   
-  categoryId: int("categoryId"),
-  authorId: int("authorId"),
+  categoryId: integer("categoryId"),
+  authorId: integer("authorId"),
   
   // SEO
   metaTitle: varchar("metaTitle", { length: 255 }),
@@ -273,10 +313,10 @@ export const blogPosts = mysqlTable("blog_posts", {
   publishedAt: timestamp("publishedAt"),
   
   // Estatísticas
-  views: int("views").default(0),
+  views: integer("views").default(0),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type BlogPost = typeof blogPosts.$inferSelect;
@@ -286,8 +326,8 @@ export type InsertBlogPost = typeof blogPosts.$inferInsert;
 // TABELA DE CATEGORIAS DE BLOG
 // ============================================
 
-export const blogCategories = mysqlTable("blog_categories", {
-  id: int("id").autoincrement().primaryKey(),
+export const blogCategories = pgTable("blog_categories", {
+  id: serial("id").primaryKey(),
   
   name: varchar("name", { length: 100 }).notNull(),
   slug: varchar("slug", { length: 100 }).unique().notNull(),
@@ -303,8 +343,8 @@ export type InsertBlogCategory = typeof blogCategories.$inferInsert;
 // TABELA DE CONFIGURAÇÕES DO SITE
 // ============================================
 
-export const siteSettings = mysqlTable("site_settings", {
-  id: int("id").autoincrement().primaryKey(),
+export const siteSettings = pgTable("site_settings", {
+  id: serial("id").primaryKey(),
   
   // Informações da empresa
   companyName: varchar("companyName", { length: 255 }),
@@ -339,7 +379,7 @@ export const siteSettings = mysqlTable("site_settings", {
   googleAnalyticsId: varchar("googleAnalyticsId", { length: 50 }),
   facebookPixelId: varchar("facebookPixelId", { length: 50 }),
   
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
@@ -350,14 +390,14 @@ export type InsertSiteSetting = typeof siteSettings.$inferInsert;
 // ============================================
 
 // Buffer de mensagens do WhatsApp
-export const messageBuffer = mysqlTable("message_buffer", {
-  id: int("id").autoincrement().primaryKey(),
+export const messageBuffer = pgTable("message_buffer", {
+  id: serial("id").primaryKey(),
   phone: varchar("phone", { length: 20 }).notNull(),
   messageId: varchar("messageId", { length: 255 }).notNull().unique(),
   content: text("content"),
-  type: mysqlEnum("type", ["incoming", "outgoing"]).notNull(),
+  type: typeEnum.notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
-  processed: int("processed").default(0).notNull(),
+  processed: integer("processed").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -365,12 +405,12 @@ export type MessageBuffer = typeof messageBuffer.$inferSelect;
 export type InsertMessageBuffer = typeof messageBuffer.$inferInsert;
 
 // Contexto e histórico de IA
-export const aiContextStatus = mysqlTable("ai_context_status", {
-  id: int("id").autoincrement().primaryKey(),
+export const aiContextStatus = pgTable("ai_context_status", {
+  id: serial("id").primaryKey(),
   sessionId: varchar("sessionId", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 20 }).notNull(),
   message: text("message").notNull(), // JSON com {type: 'ai'|'user', content: string}
-  role: mysqlEnum("role", ["user", "assistant", "system"]).notNull(),
+  role: roleEnum.notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -378,30 +418,30 @@ export type AiContextStatus = typeof aiContextStatus.$inferSelect;
 export type InsertAiContextStatus = typeof aiContextStatus.$inferInsert;
 
 // Interesses dos clientes (para N8N)
-export const clientInterests = mysqlTable("client_interests", {
-  id: int("id").autoincrement().primaryKey(),
-  clientId: int("clientId").notNull(), // Referência ao lead
+export const clientInterests = pgTable("client_interests", {
+  id: serial("id").primaryKey(),
+  clientId: integer("clientId").notNull(), // Referência ao lead
   propertyType: varchar("propertyType", { length: 100 }), // Tipo de imóvel de interesse
-  interestType: mysqlEnum("interestType", ["venda", "locacao", "ambos"]),
-  budgetMin: int("budgetMin"), // Em centavos
-  budgetMax: int("budgetMax"), // Em centavos
+  interestType: interestTypeEnum,
+  budgetMin: integer("budgetMin"), // Em centavos
+  budgetMax: integer("budgetMax"), // Em centavos
   preferredNeighborhoods: text("preferredNeighborhoods"),
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type ClientInterest = typeof clientInterests.$inferSelect;
 export type InsertClientInterest = typeof clientInterests.$inferInsert;
 
 // Webhooks e logs de integração
-export const webhookLogs = mysqlTable("webhook_logs", {
-  id: int("id").autoincrement().primaryKey(),
+export const webhookLogs = pgTable("webhook_logs", {
+  id: serial("id").primaryKey(),
   source: varchar("source", { length: 50 }).notNull(), // whatsapp, n8n, etc
   event: varchar("event", { length: 100 }).notNull(),
   payload: text("payload"), // JSON do payload recebido
   response: text("response"), // JSON da resposta enviada
-  status: mysqlEnum("status", ["success", "error", "pending"]).notNull(),
+  status: statusEnum.notNull(),
   errorMessage: text("errorMessage"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -413,8 +453,8 @@ export type InsertWebhookLog = typeof webhookLogs.$inferInsert;
 // TABELA DE PROPRIETÁRIOS
 // ============================================
 
-export const owners = mysqlTable("owners", {
-  id: int("id").autoincrement().primaryKey(),
+export const owners = pgTable("owners", {
+  id: serial("id").primaryKey(),
   
   // Informações pessoais
   name: varchar("name", { length: 255 }).notNull(),
@@ -442,7 +482,7 @@ export const owners = mysqlTable("owners", {
   active: boolean("active").default(true),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Owner = typeof owners.$inferSelect;
@@ -452,16 +492,16 @@ export type InsertOwner = typeof owners.$inferInsert;
 // TABELAS DE ANALYTICS E MÉTRICAS
 // ============================================
 
-export const analyticsEvents = mysqlTable("analytics_events", {
-  id: int("id").autoincrement().primaryKey(),
+export const analyticsEvents = pgTable("analytics_events", {
+  id: serial("id").primaryKey(),
   
   // Tipo de evento
   eventType: varchar("eventType", { length: 50 }).notNull(), // page_view, property_view, contact_form, whatsapp_click, phone_click
   
   // Dados do evento
-  propertyId: int("propertyId"),
-  leadId: int("leadId"),
-  userId: int("userId"),
+  propertyId: integer("propertyId"),
+  leadId: integer("leadId"),
+  userId: integer("userId"),
   
   // Origem do tráfego
   source: varchar("source", { length: 100 }), // google_ads, facebook_ads, instagram, organic, direct
@@ -483,8 +523,8 @@ export const analyticsEvents = mysqlTable("analytics_events", {
 export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
 export type InsertAnalyticsEvent = typeof analyticsEvents.$inferInsert;
 
-export const campaignSources = mysqlTable("campaign_sources", {
-  id: int("id").autoincrement().primaryKey(),
+export const campaignSources = pgTable("campaign_sources", {
+  id: serial("id").primaryKey(),
   
   // Identificação da campanha
   name: varchar("name", { length: 255 }).notNull(),
@@ -494,9 +534,9 @@ export const campaignSources = mysqlTable("campaign_sources", {
   
   // Métricas
   budget: decimal("budget", { precision: 10, scale: 2 }), // Orçamento investido
-  clicks: int("clicks").default(0),
-  impressions: int("impressions").default(0),
-  conversions: int("conversions").default(0), // Leads gerados
+  clicks: integer("clicks").default(0),
+  impressions: integer("impressions").default(0),
+  conversions: integer("conversions").default(0), // Leads gerados
   
   // Status
   active: boolean("active").default(true),
@@ -507,7 +547,7 @@ export const campaignSources = mysqlTable("campaign_sources", {
   notes: text("notes"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type CampaignSource = typeof campaignSources.$inferSelect;
@@ -517,8 +557,8 @@ export type InsertCampaignSource = typeof campaignSources.$inferInsert;
 // TABELAS FINANCEIRAS
 // ============================================
 
-export const transactions = mysqlTable("transactions", {
-  id: int("id").autoincrement().primaryKey(),
+export const transactions = pgTable("transactions", {
+  id: serial("id").primaryKey(),
   
   // Tipo de transação
   type: varchar("type", { length: 50 }).notNull(), // commission, expense, revenue
@@ -529,9 +569,9 @@ export const transactions = mysqlTable("transactions", {
   currency: varchar("currency", { length: 3 }).default("BRL"),
   
   // Relacionamentos
-  propertyId: int("propertyId"), // Imóvel relacionado
-  leadId: int("leadId"), // Cliente relacionado
-  ownerId: int("ownerId"), // Proprietário relacionado
+  propertyId: integer("propertyId"), // Imóvel relacionado
+  leadId: integer("leadId"), // Cliente relacionado
+  ownerId: integer("ownerId"), // Proprietário relacionado
   
   // Descrição
   description: text("description").notNull(),
@@ -548,19 +588,19 @@ export const transactions = mysqlTable("transactions", {
   invoiceNumber: varchar("invoiceNumber", { length: 100 }),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = typeof transactions.$inferInsert;
 
-export const commissions = mysqlTable("commissions", {
-  id: int("id").autoincrement().primaryKey(),
+export const commissions = pgTable("commissions", {
+  id: serial("id").primaryKey(),
   
   // Venda relacionada
-  propertyId: int("propertyId").notNull(),
-  leadId: int("leadId").notNull(), // Comprador
-  ownerId: int("ownerId"), // Vendedor
+  propertyId: integer("propertyId").notNull(),
+  leadId: integer("leadId").notNull(), // Comprador
+  ownerId: integer("ownerId"), // Vendedor
   
   // Valores da venda
   salePrice: decimal("salePrice", { precision: 12, scale: 2 }).notNull(),
@@ -580,10 +620,10 @@ export const commissions = mysqlTable("commissions", {
   notes: text("notes"),
   
   // Transação financeira relacionada
-  transactionId: int("transactionId"),
+  transactionId: integer("transactionId"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Commission = typeof commissions.$inferSelect;
@@ -593,8 +633,8 @@ export type InsertCommission = typeof commissions.$inferInsert;
 // TABELA DE AVALIAÇÕES DE CLIENTES
 // ============================================
 
-export const reviews = mysqlTable("reviews", {
-  id: int("id").autoincrement().primaryKey(),
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
   
   // Informações do cliente
   clientName: varchar("clientName", { length: 255 }).notNull(),
@@ -602,23 +642,23 @@ export const reviews = mysqlTable("reviews", {
   clientPhoto: varchar("clientPhoto", { length: 500 }),
   
   // Avaliação
-  rating: int("rating").notNull(), // 1 a 5 estrelas
+  rating: integer("rating").notNull(), // 1 a 5 estrelas
   title: varchar("title", { length: 255 }),
   content: text("content").notNull(),
   
   // Relacionamentos (opcional)
-  propertyId: int("propertyId"), // Imóvel avaliado
-  leadId: int("leadId"), // Cliente do CRM
+  propertyId: integer("propertyId"), // Imóvel avaliado
+  leadId: integer("leadId"), // Cliente do CRM
   
   // Status
   approved: boolean("approved").default(false),
   featured: boolean("featured").default(false), // Destacar na home
   
   // Metadados
-  displayOrder: int("displayOrder").default(0),
+  displayOrder: integer("displayOrder").default(0),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Review = typeof reviews.$inferSelect;
@@ -629,31 +669,20 @@ export type InsertReview = typeof reviews.$inferInsert;
 // TABELA DE PIPELINE DE VENDAS (CRM)
 // ============================================
 
-export const salesPipeline = mysqlTable("sales_pipeline", {
-  id: int("id").autoincrement().primaryKey(),
+export const salesPipeline = pgTable("sales_pipeline", {
+  id: serial("id").primaryKey(),
   
-  leadId: int("leadId").notNull(),
-  propertyId: int("propertyId"),
+  leadId: integer("leadId").notNull(),
+  propertyId: integer("propertyId"),
   
   // Estágio do pipeline
-  stage: mysqlEnum("stage", [
-    "novo",
-    "contato_inicial",
-    "qualificado",
-    "visita_agendada",
-    "visita_realizada",
-    "proposta",
-    "negociacao",
-    "fechado_ganho",
-    "fechado_perdido",
-    "sem_interesse"
-  ]).default("novo").notNull(),
+  stage: stageEnum.default("novo").notNull(),
   
   // Probabilidade de fechamento (%)
-  probability: int("probability").default(0),
+  probability: integer("probability").default(0),
   
   // Valor estimado da transação
-  estimatedValue: int("estimatedValue"), // em centavos
+  estimatedValue: integer("estimatedValue"), // em centavos
   
   // Datas importantes
   enteredAt: timestamp("enteredAt").defaultNow().notNull(),
@@ -664,7 +693,7 @@ export const salesPipeline = mysqlTable("sales_pipeline", {
   notes: text("notes"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type SalesPipeline = typeof salesPipeline.$inferSelect;
@@ -674,44 +703,26 @@ export type InsertSalesPipeline = typeof salesPipeline.$inferInsert;
 // TABELA DE TAREFAS/FOLLOW-UP (CRM)
 // ============================================
 
-export const tasks = mysqlTable("tasks", {
-  id: int("id").autoincrement().primaryKey(),
+export const tasks = pgTable("tasks", {
+  id: serial("id").primaryKey(),
   
-  leadId: int("leadId").notNull(),
-  assignedTo: int("assignedTo"), // ID do usuário
+  leadId: integer("leadId").notNull(),
+  assignedTo: integer("assignedTo"), // ID do usuário
   
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   
-  type: mysqlEnum("type", [
-    "ligacao",
-    "email",
-    "whatsapp",
-    "visita",
-    "reuniao",
-    "proposta",
-    "acompanhamento"
-  ]).notNull(),
+  type: typeEnum.notNull(),
   
-  priority: mysqlEnum("priority", [
-    "baixa",
-    "media",
-    "alta",
-    "urgente"
-  ]).default("media"),
+  priority: priorityEnum.default("media"),
   
-  status: mysqlEnum("status", [
-    "pendente",
-    "em_progresso",
-    "concluida",
-    "cancelada"
-  ]).default("pendente"),
+  status: statusEnum.default("pendente"),
   
   dueDate: date("dueDate"),
   completedAt: timestamp("completedAt"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Task = typeof tasks.$inferSelect;
@@ -724,18 +735,18 @@ export type InsertTask = typeof tasks.$inferInsert;
 // TABELA DE TAXAS DE JUROS PARA SIMULADOR
 // ============================================
 
-export const interestRates = mysqlTable("interestRates", {
-  id: int("id").autoincrement().primaryKey(),
+export const interestRates = pgTable("interestRates", {
+  id: serial("id").primaryKey(),
   
   bankName: varchar("bankName", { length: 100 }).notNull(),
-  rateType: mysqlEnum("rateType", ["sac", "price"]).notNull(),
+  rateType: rateTypeEnum.notNull(),
   annualRate: decimal("annualRate", { precision: 5, scale: 3 }).notNull(), // Ex: 8.500 para 8.5%
   startDate: date("startDate").notNull(),
   endDate: date("endDate"),
   
   // Metadados
   source: varchar("source", { length: 255 }),
-  lastUpdated: timestamp("lastUpdated").defaultNow().onUpdateNow().notNull(),
+  lastUpdated: timestamp("lastUpdated").defaultNow().notNull(),
 });
 
 export type InterestRate = typeof interestRates.$inferSelect;
@@ -745,30 +756,25 @@ export type InsertInterestRate = typeof interestRates.$inferInsert;
 // TABELA DE ALUGU\u00c9IS (RENTAL MANAGEMENT)
 // ============================================
 
-export const rentals = mysqlTable("rentals", {
-  id: int("id").autoincrement().primaryKey(),
+export const rentals = pgTable("rentals", {
+  id: serial("id").primaryKey(),
   
   // Refer\u00eancias
-  propertyId: int("propertyId").notNull(),
-  tenantId: int("tenantId").notNull(), // Lead/Cliente que \u00e9 o inquilino
-  ownerId: int("ownerId").notNull(), // Propriet\u00e1rio do im\u00f3vel
+  propertyId: integer("propertyId").notNull(),
+  tenantId: integer("tenantId").notNull(), // Lead/Cliente que \u00e9 o inquilino
+  ownerId: integer("ownerId").notNull(), // Propriet\u00e1rio do im\u00f3vel
   
   // Valores
-  monthlyRent: int("monthlyRent").notNull(), // em centavos
+  monthlyRent: integer("monthlyRent").notNull(), // em centavos
   commissionPercentage: decimal("commissionPercentage", { precision: 5, scale: 2 }).default(0), // % de comiss\u00e3o
-  commissionAmount: int("commissionAmount").default(0), // em centavos
+  commissionAmount: integer("commissionAmount").default(0), // em centavos
   
   // Datas
   startDate: date("startDate").notNull(),
   endDate: date("endDate"),
   
   // Status
-  status: mysqlEnum("status", [
-    "ativo",
-    "finalizado",
-    "cancelado",
-    "suspenso"
-  ]).default("ativo").notNull(),
+  status: statusEnum.default("ativo").notNull(),
   
   // Contrato
   contractUrl: varchar("contractUrl", { length: 500 }),
@@ -776,7 +782,7 @@ export const rentals = mysqlTable("rentals", {
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Rental = typeof rentals.$inferSelect;
@@ -786,43 +792,32 @@ export type InsertRental = typeof rentals.$inferInsert;
 // TABELA DE PAGAMENTOS DE ALUGU\u00c9IS
 // ============================================
 
-export const rentalPayments = mysqlTable("rentalPayments", {
-  id: int("id").autoincrement().primaryKey(),
+export const rentalPayments = pgTable("rentalPayments", {
+  id: serial("id").primaryKey(),
   
-  rentalId: int("rentalId").notNull(),
-  tenantId: int("tenantId").notNull(),
+  rentalId: integer("rentalId").notNull(),
+  tenantId: integer("tenantId").notNull(),
   
   // Valores
-  amount: int("amount").notNull(), // em centavos
-  commission: int("commission").default(0), // em centavos
+  amount: integer("amount").notNull(), // em centavos
+  commission: integer("commission").default(0), // em centavos
   
   // Data de vencimento e pagamento
   dueDate: date("dueDate").notNull(),
   paidDate: date("paidDate"),
   
   // M\u00e9todo de pagamento
-  paymentMethod: mysqlEnum("paymentMethod", [
-    "boleto",
-    "pix",
-    "transferencia",
-    "dinheiro",
-    "outro"
-  ]).notNull(),
+  paymentMethod: paymentMethodEnum.notNull(),
   
   // Status
-  status: mysqlEnum("status", [
-    "pendente",
-    "pago",
-    "atrasado",
-    "cancelado"
-  ]).default("pendente").notNull(),
+  status: statusEnum.default("pendente").notNull(),
   
   // Refer\u00eancias de pagamento
   paymentReference: varchar("paymentReference", { length: 255 }), // N\u00famero do boleto, ID do Pix, etc
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type RentalPayment = typeof rentalPayments.$inferSelect;
@@ -832,43 +827,28 @@ export type InsertRentalPayment = typeof rentalPayments.$inferInsert;
 // TABELA DE DESPESAS DE ALUGU\u00c9IS
 // ============================================
 
-export const rentalExpenses = mysqlTable("rentalExpenses", {
-  id: int("id").autoincrement().primaryKey(),
+export const rentalExpenses = pgTable("rentalExpenses", {
+  id: serial("id").primaryKey(),
   
-  rentalId: int("rentalId").notNull(),
-  propertyId: int("propertyId").notNull(),
+  rentalId: integer("rentalId").notNull(),
+  propertyId: integer("propertyId").notNull(),
   
   // Tipo de despesa
-  expenseType: mysqlEnum("expenseType", [
-    "manutencao",
-    "limpeza",
-    "reparos",
-    "seguro",
-    "iptu",
-    "condominio",
-    "agua",
-    "luz",
-    "internet",
-    "outro"
-  ]).notNull(),
+  expenseType: expenseTypeEnum.notNull(),
   
   // Valores
-  amount: int("amount").notNull(), // em centavos
+  amount: integer("amount").notNull(), // em centavos
   description: text("description"),
   
   // Data
   expenseDate: date("expenseDate").notNull(),
   
   // Status
-  status: mysqlEnum("status", [
-    "pendente",
-    "pago",
-    "cancelado"
-  ]).default("pendente").notNull(),
+  status: statusEnum.default("pendente").notNull(),
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type RentalExpense = typeof rentalExpenses.$inferSelect;
@@ -878,10 +858,10 @@ export type InsertRentalExpense = typeof rentalExpenses.$inferInsert;
 // TABELA DE CONTRATOS DE ALUGU\u00c9L
 // ============================================
 
-export const rentalContracts = mysqlTable("rentalContracts", {
-  id: int("id").autoincrement().primaryKey(),
+export const rentalContracts = pgTable("rentalContracts", {
+  id: serial("id").primaryKey(),
   
-  rentalId: int("rentalId").notNull(),
+  rentalId: integer("rentalId").notNull(),
   
   // Dados do contrato
   contractNumber: varchar("contractNumber", { length: 100 }).unique(),
@@ -901,7 +881,7 @@ export const rentalContracts = mysqlTable("rentalContracts", {
   propertyAddress: varchar("propertyAddress", { length: 500 }).notNull(),
   
   // Valores
-  monthlyRent: int("monthlyRent").notNull(),
+  monthlyRent: integer("monthlyRent").notNull(),
   
   // Datas
   startDate: date("startDate").notNull(),
@@ -909,16 +889,11 @@ export const rentalContracts = mysqlTable("rentalContracts", {
   signedDate: date("signedDate"),
   
   // Status
-  status: mysqlEnum("status", [
-    "rascunho",
-    "assinado",
-    "finalizado",
-    "cancelado"
-  ]).default("rascunho").notNull(),
+  status: statusEnum.default("rascunho").notNull(),
   
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type RentalContract = typeof rentalContracts.$inferSelect;
