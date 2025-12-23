@@ -29,9 +29,9 @@ rm -rf node_modules/.vite
 echo -e "${BLUE}📦 Instalando dependências...${NC}"
 pnpm install --frozen-lockfile
 
-# Executar migrations do banco de dados
-echo -e "${BLUE}🗄️  Executando migrations do banco de dados...${NC}"
-pnpm db:push
+# Migrations devem ser executadas APÓS o deploy, não durante o build
+# echo -e "${BLUE}🗄️  Executando migrations do banco de dados...${NC}"
+# pnpm db:push
 
 # Build do cliente (frontend)
 echo -e "${BLUE}⚛️  Buildando frontend...${NC}"

@@ -136,8 +136,8 @@ export const properties = pgTable("properties", {
   referenceCode: varchar("referenceCode", { length: 50 }).unique(),
   
   // Tipo e finalidade
-  propertyType: propertyTypeEnum.notNull(),
-  transactionType: transactionTypeEnum.notNull(),
+  propertyType: propertyTypeEnum("propertyType").notNull(),
+  transactionType: transactionTypeEnum("transactionType").notNull(),
   
   // Localização
   address: varchar("address", { length: 255 }),
@@ -273,7 +273,7 @@ export const interactions = pgTable("interactions", {
   leadId: integer("leadId").notNull(),
   userId: integer("userId"), // Quem fez a interação
   
-  type: typeEnum.notNull(),
+  type: typeEnum("type").notNull(),
   
   subject: varchar("subject", { length: 255 }),
   description: text("description"),
@@ -395,7 +395,7 @@ export const messageBuffer = pgTable("message_buffer", {
   phone: varchar("phone", { length: 20 }).notNull(),
   messageId: varchar("messageId", { length: 255 }).notNull().unique(),
   content: text("content"),
-  type: typeEnum.notNull(),
+  type: typeEnum("type").notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
   processed: integer("processed").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -410,7 +410,7 @@ export const aiContextStatus = pgTable("ai_context_status", {
   sessionId: varchar("sessionId", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 20 }).notNull(),
   message: text("message").notNull(), // JSON com {type: 'ai'|'user', content: string}
-  role: roleEnum.notNull(),
+  role: roleEnum("role").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -441,7 +441,7 @@ export const webhookLogs = pgTable("webhook_logs", {
   event: varchar("event", { length: 100 }).notNull(),
   payload: text("payload"), // JSON do payload recebido
   response: text("response"), // JSON da resposta enviada
-  status: statusEnum.notNull(),
+  status: statusEnum("status").notNull(),
   errorMessage: text("errorMessage"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -712,7 +712,7 @@ export const tasks = pgTable("tasks", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   
-  type: typeEnum.notNull(),
+  type: typeEnum("type").notNull(),
   
   priority: priorityEnum.default("media"),
   
@@ -739,7 +739,7 @@ export const interestRates = pgTable("interestRates", {
   id: serial("id").primaryKey(),
   
   bankName: varchar("bankName", { length: 100 }).notNull(),
-  rateType: rateTypeEnum.notNull(),
+  rateType: rateTypeEnum("rateType").notNull(),
   annualRate: decimal("annualRate", { precision: 5, scale: 3 }).notNull(), // Ex: 8.500 para 8.5%
   startDate: date("startDate").notNull(),
   endDate: date("endDate"),
@@ -807,7 +807,7 @@ export const rentalPayments = pgTable("rentalPayments", {
   paidDate: date("paidDate"),
   
   // M\u00e9todo de pagamento
-  paymentMethod: paymentMethodEnum.notNull(),
+  paymentMethod: paymentMethodEnum("paymentMethod").notNull(),
   
   // Status
   status: statusEnum.default("pendente").notNull(),
@@ -834,7 +834,7 @@ export const rentalExpenses = pgTable("rentalExpenses", {
   propertyId: integer("propertyId").notNull(),
   
   // Tipo de despesa
-  expenseType: expenseTypeEnum.notNull(),
+  expenseType: expenseTypeEnum("expenseType").notNull(),
   
   // Valores
   amount: integer("amount").notNull(), // em centavos

@@ -38,7 +38,7 @@ RUN npm install -g pnpm@latest && \
 COPY server ./server
 COPY drizzle ./drizzle
 COPY shared ./shared
-COPY storage ./storage
+# COPY storage ./storage  # Diretório não existe no repositório
 COPY tsconfig.json ./
 
 # Build do backend
@@ -65,7 +65,7 @@ COPY --from=server-builder /app/dist/server ./dist/server
 # Copiar arquivos necessários
 COPY drizzle ./drizzle
 COPY shared ./shared
-COPY storage ./storage
+# COPY storage ./storage  # Diretório não existe no repositório
 COPY server/_core ./server/_core
 
 # Criar usuário não-root para segurança
