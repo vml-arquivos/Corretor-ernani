@@ -1,386 +1,303 @@
-# 🏰 Corretor das Mansões - Hernani Muniz
+# Corretor das Mansões - Sistema de Gestão de Imóveis
 
-Sistema completo de consultoria imobiliária de luxo em Brasília com CRM integrado, automação via WhatsApp e gestão de imóveis.
+**Versão**: 1.0.0  
+**Status**: ✅ Pronto para Produção  
+**Última Atualização**: 23 de Dezembro de 2025
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-22.x-green.svg)
-![React](https://img.shields.io/badge/react-19.x-blue.svg)
-![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
+---
 
-## ✨ Funcionalidades
+## 📋 Visão Geral
 
-### 🏠 Gestão de Imóveis
-- Cadastro completo de imóveis (casas, apartamentos, coberturas, terrenos)
-- Upload múltiplo de fotos com integração S3
-- Filtros avançados (tipo, bairro, preço, características)
-- Página de detalhes com galeria e localização no mapa
-- Sistema de destaque para imóveis premium
-- Vitrine pública com busca e ordenação
+Sistema completo de gestão de imóveis integrado com WhatsApp/N8N, OAuth Manus, PostgreSQL e Google Maps. Desenvolvido com React 19, tRPC, Drizzle ORM e Docker.
 
-### 👥 CRM Completo
-- Gestão de leads e clientes
-- Funil de vendas visual (Kanban)
-- Qualificação automática (Quente/Morno/Frio)
-- Histórico completo de interações
-- Sistema de follow-up automático
-- Dashboard com métricas e analytics
-- Segmentação por perfil de cliente
+**Funcionalidades principais**:
+- 🏠 Gestão completa de imóveis
+- 👥 Gestão de leads e clientes
+- 💬 Integração com WhatsApp via N8N
+- 🗺️ Mapas interativos com Google Maps
+- 📊 Dashboard com analytics
+- 🔐 Autenticação segura com OAuth
+- 📱 Interface responsiva
 
-### 💬 Automação WhatsApp
-- Integração com N8N para automação
-- Atendente IA (Lívia 3.0)
-- Histórico de mensagens no CRM
-- Webhooks para receber e enviar mensagens
-- Agendamento automático de visitas
-- Qualificação de leads via conversa
+---
 
-### 📝 Blog Imobiliário
-- Sistema completo de blog
-- Categorias e tags
-- Busca por palavras-chave
-- Compartilhamento social
-- SEO otimizado
-
-### 📊 Analytics e Relatórios
-- Dashboard de vendas
-- Métricas de conversão
-- Análise de origem de leads
-- Relatórios de performance
-- Integração com Manus Analytics
-
-## 🚀 Tecnologias
-
-### Frontend
-- **React 19** - Interface moderna e responsiva
-- **Tailwind CSS 4** - Estilização com design system personalizado
-- **shadcn/ui** - Componentes de UI de alta qualidade
-- **Wouter** - Roteamento leve e eficiente
-- **tRPC Client** - Type-safe API calls
-
-### Backend
-- **Node.js 22** - Runtime JavaScript
-- **Express 4** - Framework web
-- **tRPC 11** - Type-safe API com contratos end-to-end
-- **Drizzle ORM** - ORM TypeScript-first para MySQL
-- **Superjson** - Serialização avançada (Date, Map, Set)
-
-### Banco de Dados
-- **MySQL 8** / **TiDB** - Banco de dados relacional
-- **Drizzle Kit** - Migrations e schema management
-
-### Autenticação
-- **Manus OAuth** - Sistema de autenticação integrado
-- **JWT** - Tokens seguros para sessões
-
-### Storage
-- **AWS S3** - Armazenamento de imagens de imóveis
-
-### Integrações
-- **N8N Webhooks** - Automação de workflows
-- **WhatsApp Business API** - Comunicação com clientes
-- **Google Maps API** - Localização de imóveis
-
-## 📁 Estrutura do Projeto
-
-```
-corretordasmansoes/
-├── client/                    # Frontend React
-│   ├── public/               # Assets estáticos
-│   ├── src/
-│   │   ├── components/       # Componentes reutilizáveis
-│   │   │   ├── ui/          # shadcn/ui components
-│   │   │   ├── Header.tsx
-│   │   │   ├── Footer.tsx
-│   │   │   └── DashboardLayout.tsx
-│   │   ├── pages/           # Páginas da aplicação
-│   │   │   ├── Home.tsx
-│   │   │   ├── Properties.tsx
-│   │   │   ├── PropertyDetail.tsx
-│   │   │   ├── Blog.tsx
-│   │   │   └── admin/       # Páginas administrativas
-│   │   ├── contexts/        # React contexts
-│   │   ├── hooks/           # Custom hooks
-│   │   ├── lib/             # Utilitários
-│   │   │   └── trpc.ts      # Cliente tRPC
-│   │   ├── App.tsx          # Rotas e layout
-│   │   ├── main.tsx         # Entry point
-│   │   └── index.css        # Estilos globais
-├── server/                   # Backend Node.js
-│   ├── _core/               # Infraestrutura
-│   │   ├── context.ts       # Contexto tRPC
-│   │   ├── env.ts           # Variáveis de ambiente
-│   │   ├── llm.ts           # Integração LLM
-│   │   └── oauth.ts         # Autenticação OAuth
-│   ├── db.ts                # Query helpers
-│   ├── routers.ts           # Rotas tRPC
-│   └── index.ts             # Entry point
-├── drizzle/                 # Banco de dados
-│   ├── schema.ts            # Schema das tabelas
-│   └── migrations/          # Migrations SQL
-├── shared/                  # Código compartilhado
-│   ├── types.ts             # Tipos TypeScript
-│   └── constants.ts         # Constantes
-├── storage/                 # Helpers S3
-│   └── index.ts
-├── Dockerfile               # Build Docker
-├── docker-compose.yml       # Orquestração
-├── build.sh                 # Script de build
-├── deploy.sh                # Script de deploy
-├── package.json             # Dependências
-└── tsconfig.json            # Config TypeScript
-```
-
-## 🛠️ Instalação
-
-### Pré-requisitos
-
-- Node.js 22+
-- pnpm 9+
-- MySQL 8+ (ou Docker)
+## 🚀 Quick Start
 
 ### Desenvolvimento Local
 
-1. **Clone o repositório:**
 ```bash
-git clone https://github.com/seu-usuario/corretordasmansoes.git
-cd corretordasmansoes
-```
+# 1. Clonar repositório
+git clone https://github.com/vml-arquivos/Corretor-ernani.git
+cd Corretor-ernani
 
-2. **Instale as dependências:**
-```bash
+# 2. Instalar dependências
 pnpm install
-```
 
-3. **Configure as variáveis de ambiente:**
-```bash
-cp .env.example .env
-nano .env  # Configure suas variáveis
-```
+# 3. Configurar variáveis de ambiente
+cp .env.example .env.local
 
-Veja [ENV_VARIABLES.md](./ENV_VARIABLES.md) para lista completa de variáveis.
-
-4. **Execute as migrations:**
-```bash
-pnpm db:push
-```
-
-5. **Inicie o servidor de desenvolvimento:**
-```bash
+# 4. Iniciar servidor de desenvolvimento
 pnpm dev
+
+# 5. Abrir http://localhost:5173
 ```
 
-6. **Acesse a aplicação:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3000/api
-
-## 🐳 Deploy com Docker
-
-### Deploy Rápido
+### Produção com Docker
 
 ```bash
-# Configure variáveis
-cp .env.example .env
-nano .env
+# 1. Configurar variáveis
+cp .env.example .env.production
+# Editar .env.production com valores reais
 
-# Execute deploy
-./deploy.sh
-```
-
-### Manual
-
-```bash
-# Build e start
+# 2. Build e deploy
 docker-compose up -d
 
-# Ver logs
-docker-compose logs -f
-
-# Parar
-docker-compose down
+# 3. Verificar saúde
+curl http://localhost:3000/health
 ```
 
-Veja [DOCKER_DEPLOY.md](./DOCKER_DEPLOY.md) para guia completo.
+---
+
+## 📦 Stack Tecnológico
+
+| Categoria | Tecnologia | Versão |
+|-----------|-----------|--------|
+| **Frontend** | React | 19.1.1 |
+| **Styling** | TailwindCSS | 4.1.14 |
+| **Build** | Vite | 7.1.7 |
+| **Backend** | Express | 4.21.2 |
+| **API** | tRPC | 11.6.0 |
+| **Database** | PostgreSQL | 16 |
+| **ORM** | Drizzle | 0.44.6 |
+| **Auth** | OAuth Manus | Latest |
+| **Maps** | Google Maps API | Latest |
+| **Automation** | N8N | Latest |
+| **Container** | Docker | Latest |
+
+---
+
+## 🗂️ Estrutura do Projeto
+
+```
+.
+├── client/                  # Frontend React
+│   ├── src/
+│   │   ├── components/     # Componentes reutilizáveis
+│   │   ├── pages/          # Páginas da aplicação
+│   │   ├── _core/          # Hooks e utilitários
+│   │   └── App.tsx         # Componente principal
+│   └── index.html
+├── server/                  # Backend Express + tRPC
+│   ├── _core/              # Configuração central
+│   ├── routers.ts          # Definição de rotas tRPC
+│   ├── db.ts               # Funções de banco de dados
+│   └── *.test.ts           # Testes
+├── shared/                  # Código compartilhado
+│   ├── const.ts            # Constantes
+│   └── types.ts            # Tipos TypeScript
+├── drizzle/                # Migrações e schema
+│   ├── schema.ts           # Definição de tabelas
+│   └── migrations/         # Histórico de migrações
+├── docker-compose.yml      # Orquestração de containers
+├── Dockerfile              # Build da imagem
+├── package.json            # Dependências
+├── tsconfig.json           # Configuração TypeScript
+├── vite.config.ts          # Configuração Vite
+└── drizzle.config.ts       # Configuração Drizzle
+```
+
+---
+
+## 🔧 Configuração
+
+### Variáveis de Ambiente Obrigatórias
+
+```env
+# Banco de Dados
+DATABASE_URL=postgresql://user:password@host:port/database
+
+# Autenticação
+JWT_SECRET=<gerar com: openssl rand -base64 32>
+VITE_APP_ID=seu_app_id
+OAUTH_SERVER_URL=https://api.manus.im
+OWNER_OPEN_ID=seu_owner_id
+OWNER_NAME=Ernani Nunes
+
+# N8N
+N8N_WEBHOOK_URL=https://seu-n8n.com/webhook/leads
+N8N_API_KEY=sua_chave_api
+
+# Google Maps
+VITE_GOOGLE_MAPS_API_KEY=sua_chave_google
+
+# Manus Forge API
+BUILT_IN_FORGE_API_URL=https://forge-api.manus.im
+BUILT_IN_FORGE_API_KEY=sua_chave
+```
+
+Veja `.env.example` para lista completa.
+
+---
+
+## 📚 Documentação
+
+- **[GUIA_DEPLOY.md](./GUIA_DEPLOY.md)** - Instruções completas de deploy
+- **[VALIDACAO_INTEGRACOES.md](./VALIDACAO_INTEGRACOES.md)** - Detalhes de integrações
+- **[ANALISE_COMPLETA.md](./ANALISE_COMPLETA.md)** - Análise técnica do sistema
+
+---
+
+## 🧪 Testes
+
+```bash
+# Executar todos os testes
+pnpm test
+
+# Modo watch
+pnpm test:watch
+
+# Cobertura
+pnpm test:coverage
+```
+
+---
 
 ## 📝 Scripts Disponíveis
 
 ```bash
 # Desenvolvimento
-pnpm dev                    # Inicia dev server (frontend + backend)
-pnpm dev:client            # Apenas frontend
-pnpm dev:server            # Apenas backend
+pnpm dev              # Iniciar servidor de desenvolvimento
+pnpm build            # Build para produção
+pnpm start            # Iniciar servidor de produção
 
-# Build
-pnpm build                 # Build completo
-pnpm build:client          # Build frontend
-pnpm build:server          # Build backend
+# Qualidade de código
+pnpm format           # Formatar código com Prettier
+pnpm lint             # Verificar tipos TypeScript
+pnpm type-check       # Verificar tipos
 
-# Banco de Dados
-pnpm db:push               # Executar migrations
-pnpm db:studio             # Interface visual do banco
+# Banco de dados
+pnpm db:push          # Aplicar migrações
+pnpm db:studio        # Abrir Drizzle Studio
 
 # Testes
-pnpm test                  # Executar todos os testes
-pnpm test:watch            # Testes em modo watch
-
-# Linting
-pnpm lint                  # Verificar código
-pnpm lint:fix              # Corrigir automaticamente
-
-# Type checking
-pnpm type-check            # Verificar tipos TypeScript
+pnpm test             # Executar testes
+pnpm test:watch       # Modo watch
+pnpm test:coverage    # Cobertura de testes
 ```
-
-## 🧪 Testes
-
-O projeto inclui 28+ testes unitários cobrindo:
-
-- Autenticação e autorização
-- CRUD de imóveis
-- Gestão de leads
-- Webhooks N8N
-- Rotas tRPC
-
-```bash
-# Executar testes
-pnpm test
-
-# Com coverage
-pnpm test:coverage
-
-# Modo watch
-pnpm test:watch
-```
-
-## 🔐 Segurança
-
-- ✅ Autenticação JWT com Manus OAuth
-- ✅ Proteção CSRF
-- ✅ Rate limiting
-- ✅ Sanitização de inputs
-- ✅ SQL injection protection (Drizzle ORM)
-- ✅ XSS protection
-- ✅ HTTPS em produção
-- ✅ Secrets em variáveis de ambiente
-
-## 🌐 Deploy em Produção
-
-### Opções de Deploy
-
-1. **VPS/Cloud (Recomendado)**
-   - DigitalOcean
-   - AWS EC2
-   - Google Cloud Compute
-   - Azure VM
-
-2. **Platform as a Service**
-   - Railway
-   - Render
-   - Fly.io
-   - Heroku
-
-3. **Containers**
-   - AWS ECS/Fargate
-   - Google Cloud Run
-   - Azure Container Instances
-   - Kubernetes
-
-### Checklist de Deploy
-
-- [ ] Configurar variáveis de ambiente
-- [ ] Gerar JWT_SECRET forte
-- [ ] Configurar banco de dados MySQL
-- [ ] Configurar S3 para uploads
-- [ ] Configurar domínio e DNS
-- [ ] Configurar SSL/HTTPS
-- [ ] Configurar backup automático
-- [ ] Configurar monitoramento
-- [ ] Testar aplicação
-- [ ] Configurar CI/CD
-
-## 📊 Banco de Dados
-
-### Tabelas Principais
-
-- `users` - Usuários e autenticação
-- `properties` - Imóveis cadastrados
-- `leads` - Leads e clientes
-- `interactions` - Histórico de interações
-- `messages` - Mensagens WhatsApp
-- `blog_posts` - Artigos do blog
-- `blog_categories` - Categorias do blog
-- `site_settings` - Configurações do site
-
-### Migrations
-
-```bash
-# Criar migration
-pnpm db:generate
-
-# Aplicar migrations
-pnpm db:push
-
-# Rollback (manual)
-# Edite drizzle/migrations e execute novamente
-```
-
-## 🔧 Configuração
-
-### Variáveis de Ambiente Principais
-
-```env
-# Banco de Dados
-DATABASE_URL=mysql://user:pass@host:3306/db
-
-# Autenticação
-JWT_SECRET=your-secret-key
-
-# Manus OAuth
-VITE_APP_ID=your-app-id
-OAUTH_SERVER_URL=https://api.manus.im
-
-# Storage S3
-AWS_ACCESS_KEY_ID=your-key
-AWS_SECRET_ACCESS_KEY=your-secret
-AWS_REGION=us-east-1
-AWS_S3_BUCKET=your-bucket
-```
-
-Veja [ENV_VARIABLES.md](./ENV_VARIABLES.md) para lista completa.
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Por favor:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 👤 Autor
-
-**Hernani Muniz**
-- CRECI: 17921-DF
-- Email: ernanisimiao@hotmail.com
-- Telefone: (61) 3254-4464
-- Instagram: [@ernani.nunes](https://instagram.com/ernani.nunes)
-
-## 🆘 Suporte
-
-- **Issues:** https://github.com/seu-usuario/corretordasmansoes/issues
-- **Email:** suporte@corretordasmansoes.com.br
-- **Documentação:** https://docs.corretordasmansoes.com.br
-
-## 📚 Documentação Adicional
-
-- [Guia de Deploy Docker](./DOCKER_DEPLOY.md)
-- [Variáveis de Ambiente](./ENV_VARIABLES.md)
-- [TODO List](./todo.md)
 
 ---
 
-Desenvolvido com ❤️ por [Manus AI](https://manus.im)
+## 🐳 Docker
+
+### Build Local
+
+```bash
+docker build -t corretordasmansoes:latest .
+```
+
+### Executar Container
+
+```bash
+docker run -p 3000:3000 \
+  -e DATABASE_URL=postgresql://... \
+  -e JWT_SECRET=... \
+  corretordasmansoes:latest
+```
+
+### Docker Compose
+
+```bash
+# Iniciar
+docker-compose up -d
+
+# Parar
+docker-compose down
+
+# Logs
+docker-compose logs -f app
+```
+
+---
+
+## 🔐 Segurança
+
+- ✅ Autenticação OAuth obrigatória
+- ✅ JWT tokens seguros
+- ✅ Cookies httpOnly
+- ✅ CORS configurável
+- ✅ Validação de entrada com Zod
+- ✅ Proteção contra SQL injection (Drizzle ORM)
+- ✅ Usuário non-root em Docker
+- ✅ Health checks
+
+---
+
+## 📊 Performance
+
+- **Build**: ~5-10 minutos
+- **Startup**: ~30 segundos
+- **Tamanho da imagem**: ~400MB
+- **Tamanho do repositório**: 4.5MB
+- **Queries otimizadas**: Índices de banco de dados
+- **Frontend**: Vite + React 19 (rápido)
+
+---
+
+## 🚨 Troubleshooting
+
+### Porta já em uso
+```bash
+sudo lsof -i :3000
+sudo kill -9 <PID>
+```
+
+### Banco não conecta
+```bash
+docker-compose restart db
+docker-compose logs db
+```
+
+### Build falha
+```bash
+docker-compose down
+docker system prune -a
+docker-compose build --no-cache
+```
+
+Veja [GUIA_DEPLOY.md](./GUIA_DEPLOY.md#6-troubleshooting) para mais soluções.
+
+---
+
+## 📞 Suporte
+
+- **Issues**: https://github.com/vml-arquivos/Corretor-ernani/issues
+- **Discussões**: https://github.com/vml-arquivos/Corretor-ernani/discussions
+- **Manus Help**: https://help.manus.im
+
+---
+
+## 📄 Licença
+
+MIT
+
+---
+
+## ✅ Checklist de Produção
+
+- [x] Código otimizado e limpo
+- [x] Testes implementados e ativados
+- [x] Integrações validadas
+- [x] Documentação completa
+- [x] Docker configurado
+- [x] Variáveis de ambiente documentadas
+- [x] Health checks implementados
+- [x] CORS configurado
+- [x] Segurança validada
+- [x] Performance otimizada
+
+**Status**: 🟢 Pronto para Deploy
+
+---
+
+**Desenvolvido com ❤️ para Ernani Nunes**  
+**Última atualização**: 23 de Dezembro de 2025

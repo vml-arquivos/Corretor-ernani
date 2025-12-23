@@ -16,7 +16,7 @@ function createPublicContext(): TrpcContext {
   };
 }
 
-describe.skip("Integration Webhooks (N8N)", () => {
+describe("Integration Webhooks (N8N)", () => {
   let caller: ReturnType<typeof appRouter.createCaller>;
   let testPhone: string;
 
